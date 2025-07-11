@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Love</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
+    <style>
+        :root {
+            --primary: #f8c8dc; /* Soft Pink */
+            --secondary: #a2d2ff; /* Soft Blue */
+            --accent: #bde0fe; /* Lighter Blue */
+            --text: #555;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text);
+            scroll-behavior: smooth;
+            background: linear-gradient(135deg, #fff8fa 0%, #f0f8ff 100%);
+            overflow-x: hidden;
+        }
+
+        .script { font-family: 'Dancing Script', cursive; }
+        .display { font-family: 'Playfair Display', serif; }
+
+        .section {
+            min-height: 100vh;
+            padding: 6rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+            z-index: 0;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .heartbeat { animation: heartbeat 1.5s infinite; }
+
+        .timeline-item {
+            position: relative; padding-left: 40px;
+            margin-bottom: 70px; transition: all 0.3s ease;
+        }
+        .timeline-item:hover { transform: translateX(5px); }
+        .timeline-item:before {
+            content: ""; position: absolute; left: 0; top: 0;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 2;
+        }
+        .timeline-item:after {
+            content: ""; position: absolute; left: 8px; top: 18px;
+            bottom: -70px; width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+            z-index: 1;
+        }
+        .timeline-item:last-child:after { display: none; }
+
+        .memory-image {
+            width: 100%; height: 250px; border-radius: 15px;
+            object-fit: cover; margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background-size: cover; background-position: center;
+            position: relative; overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        .memory-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15), 0 0 15px rgba(248, 200, 220, 0.5);
+        }
+        .memory-image::before {
+            content: "Your Photo Here"; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.2); color: white;
+            font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            font-size: 1.2rem; letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .memory-image:hover::before { background: rgba(0,0,0,0.1); letter-spacing: 3px; }
+
+        .memory-gallery { /* */
+            display: flex; /* */
+            overflow-x: auto; /* */
+            gap: 15px; /* */
+            padding: 15px 0; /* */
+            margin-top: 20px; /* */
+            scroll-snap-type: x mandatory; /* */
+            -webkit-overflow-scrolling: touch; /* */
+            scrollbar-width: thin; /* */
+            scrollbar-color: var(--primary) #f0f0f0; /* */
+        }
+        .memory-gallery::-webkit-scrollbar { /* */
+            height: 6px; /* */
+        }
+        .memory-gallery::-webkit-scrollbar-track { /* */
+            background: #f0f0f0; /* */
+            border-radius: 10px; /* */
+        }
+        .memory-gallery::-webkit-scrollbar-thumb { /* */
+            background: var(--primary); /* */
+            border-radius: 10px; /* */
+        }
+        .memory-gallery-item { /* */
+            flex: 0 0 auto; /* */
+            width: 180px; /* */
+            height: 180px; /* */
+            border-radius: 15px; /* */
+            scroll-snap-align: start; /* */
+            position: relative; /* */
+            overflow: hidden; /* */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* */
+            transition: all 0.3s ease; /* */
+        }
+        .memory-gallery-item:hover { /* */
+            transform: scale(1.05) translateY(-5px); /* */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15), 0 0 15px rgba(248, 200, 220, 0.5); /* */
+            z-index: 2; /* */
+        }
+        .memory-gallery-item::before { /* */
+            content: "Photo"; /* */
+            position: absolute; /* */
+            top: 0; /* */
+            left: 0; /* */
+            width: 100%; /* */
+            height: 100%; /* */
+            display: flex; /* */
+            align-items: center; /* */
+            justify-content: center; /* */
+            background: rgba(0,0,0,0.2); /* */
+            color: white; /* */
+            font-weight: bold; /* */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* */
+            transition: all 0.3s ease; /* */
+        }
+        .memory-gallery-item:hover::before { /* */
+            background: rgba(0,0,0,0.1); /* */
+            letter-spacing: 2px; /* */
+        }
+        .memory-gallery-item:nth-child(1)::before { /* */
+            content: "Photo 1"; /* */
+            background-color: #ffb6c1; /* */
+        }
+        .memory-gallery-item:nth-child(2)::before { /* */
+            content: "Photo 2"; /* */
+            background-color: #add8e6; /* */
+        }
+        .memory-gallery-item:nth-child(3)::before { /* */
+            content: "Photo 3"; /* */
+            background-color: #d8bfd8; /* */
+        }
+
+        .nav-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            background-color: rgba(0,0,0,0.2); margin: 10px 0;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .nav-dot.active {
+            background-color: var(--primary); transform: scale(1.4);
+            box-shadow: 0 0 10px rgba(248, 200, 220, 0.7);
+        }
+
+        .modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.6); display: flex;
+            align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease; backdrop-filter: blur(5px);
+        }
+        .modal.show { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background-color: white; padding: 40px; border-radius: 20px;
+            max-width: 500px; width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .modal.show .modal-content { transform: scale(1); }
+        .close-modal {
+            position: absolute; top: 15px; right: 15px;
+            font-size: 24px; cursor: pointer; color: #999;
+            transition: all 0.2s ease;
+        }
+
+        .timestamp {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white; padding: 6px 15px; border-radius: 20px;
+            font-size: 0.85rem; margin-bottom: 12px; font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1); letter-spacing: 0.5px;
+        }
+
+        .content-card {
+            background: white; border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            overflow: hidden; transition: all 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .btn {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; overflow: hidden;
+        }
+        .btn::after {
+            content: ""; position: absolute; top: 50%; left: 50%;
+            width: 0; height: 0; background-color: rgba(255,255,255,0.2);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        .btn:hover::after { width: 300%; height: 300%; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+
+        .section-title { position: relative; display: inline-block; }
+        .section-title::after {
+            content: ""; position: absolute; bottom: -10px; left: 10%;
+            width: 80%; height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+        }
+
+        /* Styles for new sections */
+        #reason-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 20px; transition: all 0.3s ease;
+        }
+
+        .coupon {
+            transition: transform 0.7s, box-shadow 0.3s;
+            transform-style: preserve-3d;
+        }
+        .coupon.flipped { transform: rotateY(180deg); }
+        .coupon-front, .coupon-back {
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .coupon-front {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: 2px dashed rgba(255,255,255,0.7);
+        }
+        .coupon-back {
+            background: white; transform: rotateY(180deg);
+        }
+
+        /* Hidden Hearts Specific Styles */
+        .hidden-heart { /* */
+            position: absolute; /* */
+            cursor: pointer; /* */
+            transition: all 0.3s ease; /* */
+            opacity: 0.7; /* */
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); /* */
+        }
+
+        .hidden-heart:hover { /* */
+            transform: scale(1.3) rotate(15deg); /* */
+            opacity: 1; /* */
+        }
+
+        /* Quiz Specific Styles */
+        .quiz-option { /* */
+            transition: all 0.2s ease; /* */
+            position: relative; /* */
+            overflow: hidden; /* */
+        }
+        .quiz-option:hover { /* */
+            transform: translateY(-2px); /* */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); /* */
+        }
+        .quiz-option::after { /* */
+            content: ""; /* */
+            position: absolute; /* */
+            top: 0; /* */
+            left: 0; /* */
+            width: 0; /* */
+            height: 100%; /* */
+            background-color: rgba(248, 200, 220, 0.2); /* */
+            transition: width 0.3s ease; /* */
+            z-index: 0; /* */
+        }
+        .quiz-option:hover::after { /* */
+            width: 100%; /* */
+        }
+        .quiz-option span { /* */
+            position: relative; /* */
+            z-index: 1; /* */
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 flex flex-col items-center">
+    <div class="nav-dot active" data-section="home"></div>
+    <div class="nav-dot" data-section="story"></div>
+    <div class="nav-dot" data-section="love"></div>
+    <div class="nav-dot" data-section="apology"></div>
+    <div class="nav-dot" data-section="interactive"></div>
+    <div class="nav-dot" data-section="quiz"></div> <div class="nav-dot" data-section="hearts"></div> <div class="nav-dot" data-section="surprise"></div>
+</div>
+
+<section id="home" class="section bg-gradient-to-b from-pink-50 to-blue-50">
+    <div class="heart" style="top: 15%; left: 10%; font-size: 2rem; color: var(--primary);">❤️</div>
+    <div class="heart" style="top: 25%; right: 15%; font-size: 1.5rem; color: var(--secondary);">💕</div>
+    <div class="heart" style="bottom: 20%; left: 20%; font-size: 1.8rem; color: var(--primary);">💖</div>
+    <div class="heart" style="bottom: 30%; right: 10%; font-size: 2.2rem; color: var(--secondary);">💘</div>
+
+    <div class="container mx-auto text-center z-10 relative">
+        <h1 class="script text-6xl md:text-8xl mb-8 text-pink-400 heartbeat">Us Forever</h1>
+        <p class="text-xl md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed">On our special day, I want to celebrate the love we share and the journey we've taken together.</p>
+        <button id="start-button" class="btn bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white font-semibold py-4 px-10 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+            Begin Our Journey
+        </button>
+    </div>
+</section>
+
+<style>
+  .memory-gallery {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .memory-gallery img {
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: float 4s ease-in-out infinite;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .memory-gallery img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  .section-title {
+    font-weight: bold;
+  }
+
+  .script {
+    font-family: 'Dancing Script', cursive;
+  }
+
+  .content-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+  }
+
+  .timestamp {
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .timeline-item {
+    margin-bottom: 40px;
+  }
+</style>
+
+<section id="story" class="section bg-gradient-to-b from-blue-50 to-purple-50">
+  <div class="container mx-auto z-10 relative">
+    <h2 class="script text-5xl md:text-6xl mb-16 text-center text-blue-400 section-title">Our Story</h2>
+    <div class="max-w-4xl mx-auto">
+
+      <!-- First Meeting -->
+      <div class="timeline-item">
+        <div class="content-card p-8">
+          <div class="timestamp">Different Dates</div>
+          <h3 class="script text-3xl text-pink-400 mb-4">One of our first pictures</h3>
+          <div class="memory-gallery">
+            <img src="images/First/photo_2025-07-12_00-28-02.jpg">
+            <img src="images/First/photo_2025-07-12_00-28-13.jpg">
+            <img src="images/First/photo_2025-07-12_00-28-16.jpg">
+          </div>
+          <p class="leading-relaxed text-gray-700 mt-4">Those magical moment when our eyes met and something just clicked at TOGGI.</p>
+        </div>
+      </div>
+
+      <!-- First Trip -->
+      <div class="timeline-item">
+        <div class="content-card p-8">
+          <div class="timestamp">June 7, 2024</div>
+          <h3 class="script text-3xl text-pink-400 mb-4">Our First Trip Together</h3>
+          <div class="memory-gallery">
+            <img src="images/Trip/photo_2025-07-12_00-27-44.jpg">
+            <img src="images/Trip/photo_2025-07-12_00-27-54.jpg">
+            <img src="images/Trip/photo_2025-07-12_00-27-58.jpg">
+          </div>
+          <p class="leading-relaxed text-gray-700 mt-4">That trip, that beach was just perfect. Building sandcastles, watching the sunset, and our late-night walks along the shore. It was the first time I realized I was falling in love with you.</p>
+        </div>
+      </div>
+
+      <!-- First EID -->
+      <div class="timeline-item">
+        <div class="content-card p-8">
+          <div class="timestamp">June 17, 2024</div>
+          <h3 class="script text-3xl text-pink-400 mb-4">Our Eid Celebration</h3>
+          <div class="memory-gallery">
+            <img src="images/Eid/photo_2025-07-12_00-27-04.jpg">
+            <img src="images/Eid/photo_2025-07-12_00-27-33.jpg">
+            <img src="images/Eid/photo_2025-07-12_00-27-40.jpg">
+          </div>
+          <p class="leading-relaxed text-gray-700 mt-4">Celebrating our EID together was so special. The warmth of the your touch, the joy in your eyes, and just being together made it the most memorable EID ever.</p>
+        </div>
+      </div>
+
+      <!-- First Anniversary -->
+      <div class="timeline-item">
+        <div class="content-card p-8">
+          <div class="timestamp">July 12, 2023</div>
+          <h3 class="script text-3xl text-pink-400 mb-4">Our First Anniversary</h3>
+          <div class="memory-gallery">
+            <img src="images/Ann/photo_2025-07-12_00-30-58.jpg">
+            <img src="images/Ann/photo_2025-07-12_00-31-09.jpg">
+            <img src="images/Ann/photo_2025-07-12_00-31-13.jpg">
+          </div>
+          <p class="leading-relaxed text-gray-700 mt-4">One year down, forever to go. This day was a beautiful reflection of our journey, filled with laughter, love, and dreams for the future.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<section id="love" class="section bg-gradient-to-b from-purple-50 to-pink-50">
+    <div class="container mx-auto z-10 relative text-center">
+        <h2 class="script text-5xl md:text-6xl mb-16 text-center text-purple-400 section-title">A Thousand Little Things</h2>
+        <div id="reason-card" class="min-h-[250px] max-w-2xl mx-auto flex flex-col items-center justify-center p-10 mb-8 content-card">
+            <p id="reason-text" class="display text-3xl text-white transition-opacity duration-500">"I love you because you stayed, even when I gave you reasons not to."</p>
+        </div>
+        <button id="reason-button" class="btn bg-white text-gray-700 font-semibold py-3 px-8 rounded-full border border-gray-200 shadow-lg">
+            Tell me another reason...
+        </button>
+    </div>
+</section>
+
+<section id="apology" class="section bg-gradient-to-b from-pink-50 to-blue-50">
+    <div class="container mx-auto z-10 relative">
+        <h2 class="script text-5xl md:text-6xl mb-16 text-center text-pink-400 section-title">From the Bottom of My Heart</h2>
+        <div class="max-w-2xl mx-auto content-card p-10">
+            <p class="mb-10 text-lg leading-relaxed text-gray-700 text-center">I know I’ve hurt you. I wasn’t always honest, and I made choices that broke your heart. And for all of that, I’m truly sorry. You didn’t deserve the pain I caused. You trusted me, loved me, and stood by me when I didn’t even deserve it. Yet, you’re still here. And that means everything to me. I can’t take back what I did, but I promise I’ll never stop trying to fix what I broke.</p>
+            <div class="flex items-center justify-center mb-8">
+                <input type="checkbox" id="forgiveness-check" class="w-6 h-6 mr-4 accent-pink-400 cursor-pointer">
+                <label for="forgiveness-check" class="script text-2xl text-pink-500 cursor-pointer">Do you forgive me?</label>
+            </div>
+            <div id="promise-container" class="hidden text-center">
+                <h3 class="script text-3xl text-purple-400 mb-6">My Promise To You</h3>
+                <p class="mb-8 text-lg leading-relaxed">I promise I’ll do better. I’ll love you with more care, more honesty, more heart. I’ll listen when you need to talk. I’ll be there when you feel low. I’ll choose you every single day—not just in words, but in how I treat you. I want to make you feel safe, loved, and proud to have stayed. From now on, I’m all in—for real, for always.</p>
+                <div class="heartbeat text-6xl text-pink-400">❤️</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="interactive" class="section bg-gradient-to-b from-blue-50 to-purple-50">
+    <div class="container mx-auto z-10 relative text-center">
+        <h2 class="script text-5xl md:text-6xl mb-16 text-center text-blue-400 section-title">Gifts for Our Future</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div class="coupon-container h-52 perspective">
+                <div class="coupon relative w-full h-full">
+                    <div class="coupon-front absolute w-full h-full flex flex-col items-center justify-center p-4 text-white cursor-pointer">
+                        <h3 class="display font-bold text-2xl">Romantic Dinner</h3>
+                        <p class="mt-2">Maybe steak or Fine Dine</p>
+                    </div>
+                    <div class="coupon-back absolute w-full h-full flex items-center justify-center p-4 text-gray-600">
+                        <p class="display text-2xl font-bold">REDEEMED!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="coupon-container h-52 perspective">
+                   <div class="coupon relative w-full h-full">
+                     <div class="coupon-front absolute w-full h-full flex flex-col items-center justify-center p-4 text-white cursor-pointer">
+                         <h3 class="display font-bold text-2xl">Movie Night</h3>
+                         <p class="mt-2">Your choice, no complaints!</p>
+                     </div>
+                     <div class="coupon-back absolute w-full h-full flex items-center justify-center p-4 text-gray-600">
+                         <p class="display text-2xl font-bold">REDEEMED!</p>
+                     </div>
+                 </div>
+            </div>
+            <div class="coupon-container h-52 perspective">
+                   <div class="coupon relative w-full h-full">
+                     <div class="coupon-front absolute w-full h-full flex flex-col items-center justify-center p-4 text-white cursor-pointer">
+                         <h3 class="display font-bold text-2xl">Domino's Everyday</h3>
+                         <p class="mt-2">My treat, your destination</p>
+                     </div>
+                     <div class="coupon-back absolute w-full h-full flex items-center justify-center p-4 text-gray-600">
+                         <p class="display text-2xl font-bold">REDEEMED!</p>
+                     </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="quiz" class="section bg-gradient-to-b from-pink-50 to-purple-50">
+    <div class="container mx-auto z-10 relative text-center">
+        <h2 class="script text-5xl md:text-6xl mb-16 text-center text-pink-400 section-title">How Well Do You Remember?</h2>
+        <div id="quiz-container" class="max-w-2xl mx-auto content-card p-10">
+            <div id="question-display" class="text-xl md:text-2xl mb-8 text-gray-700"></div>
+            <div id="options-container" class="grid grid-cols-1 gap-4"></div>
+            <button id="next-question-btn" class="btn bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg mt-8 hidden">Next Question</button>
+            <div id="quiz-result" class="mt-8 text-2xl font-semibold text-purple-600 hidden"></div>
+        </div>
+    </div>
+</section>
+
+<section id="hearts" class="section bg-gradient-to-b from-purple-50 to-blue-50">
+    <div class="container mx-auto z-10 relative text-center">
+        <h2 class="script text-5xl md:text-6xl mb-16 text-center text-purple-400 section-title">Find the Hidden Hearts!</h2>
+        <p class="text-lg mb-8 max-w-2xl mx-auto">There are 5 hidden hearts scattered on this page. Click on them to reveal them all!</p>
+        <div class="relative w-full h-96 bg-white rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
+            <div class="hidden-heart text-4xl" style="top: 10%; left: 15%;">❤️</div>
+            <div class="hidden-heart text-3xl" style="top: 30%; right: 20%;">❤️</div>
+            <div class="hidden-heart text-5xl" style="bottom: 20%; left: 40%;">❤️</div>
+            <div class="hidden-heart text-2xl" style="top: 50%; left: 5%;">❤️</div>
+            <div class="hidden-heart text-4xl" style="bottom: 15%; right: 10%;">❤️</div>
+        </div>
+    </div>
+</section>
+
+<div id="heart-modal" class="modal">
+    <div class="modal-content text-center">
+        <span class="close-modal">&times;</span>
+        <div class="heartbeat text-6xl text-pink-400 mb-4">❤️</div>
+        <p class="display text-3xl font-bold text-gray-700">You found a heart!</p>
+        <p id="hearts-found-count" class="mt-4 text-xl text-gray-600"></p>
+    </div>
+</div>
+
+<section id="surprise" class="section bg-gradient-to-b from-purple-50 to-pink-50">
+    <div class="container mx-auto z-10 relative">
+        <h2 class="script text-5xl md:text-6xl mb-16 text-center text-purple-400 section-title">My Heart to Yours</h2>
+        <div class="max-w-2xl mx-auto content-card p-10 text-center">
+            <p class="mb-8 text-lg leading-relaxed">Before you continue, I want you to know something very real. You’ve changed my life in ways I can never fully explain. Your love has been my light through every dark moment, my strength when I was weak,and my reason to keep trying when I felt lost. Every second with you is a gift I’ll never take for granted. You’ve given me more than just love, you’ve given me hope..</p>
+            <button id="final-surprise-btn" class="btn bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-semibold py-4 px-10 rounded-full shadow-lg transition duration-300 transform hover:scale-105 mb-8">
+                Click For Your Surprise
+            </button>
+            <div id="final-message" class="hidden">
+                <div class="script text-4xl text-pink-500 mb-6">Happy Anniversary, My Love!</div>
+                <p class="mb-8 text-lg leading-relaxed">Today isn’t just a date — it’s a reminder of how far we’ve come. Through the good, the bad, the broken and the beautiful — you stayed. And because of that, I know what real love feels like. Thank you for being my heart, my home, my forever. I can’t wait to build the rest of our story, hand in hand, with you.</p>
+                <div class="mt-8 text-6xl heartbeat text-pink-400">💖</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<canvas id="confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Navigation
+    const sections = document.querySelectorAll('.section');
+    const navDots = document.querySelectorAll('.nav-dot');
+
+    function activateSection(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    navDots.forEach(dot => {
+        dot.addEventListener('click', () => activateSection(dot.dataset.section));
+    });
+
+    document.getElementById('start-button').addEventListener('click', () => activateSection('story'));
+
+    // Scroll spy
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            // Adjust offset for better active section detection
+            if (pageYOffset >= (sectionTop - section.clientHeight / 3)) {
+                current = section.getAttribute('id');
+            }
+        });
+        navDots.forEach(dot => {
+            dot.classList.toggle('active', dot.dataset.section === current);
+        });
+    });
+
+    // Forgiveness checkbox
+    document.getElementById('forgiveness-check').addEventListener('change', function() {
+        document.getElementById('promise-container').classList.toggle('hidden', !this.checked);
+    });
+
+    // Final surprise
+    document.getElementById('final-surprise-btn').addEventListener('click', function() {
+        this.classList.add('hidden');
+        document.getElementById('final-message').classList.remove('hidden');
+
+        // Start confetti
+        const confettiSettings = { target: 'confetti-canvas', max: 150 };
+        const confetti = new ConfettiGenerator(confettiSettings);
+        confetti.render();
+
+        setTimeout(() => {
+            confetti.clear();
+        }, 5000);
+    });
+
+    // --- "A Thousand Little Things" Button (NEW) ---
+    const reasons = [
+        "I love you because you stayed, even when I gave you reasons not to.",
+        "You see the broken parts of me and still choose to love me whole.",
+        "You gave me another chance when I didn’t deserve it.",
+        "You’re not just my love, you’re my redemption.",
+        "I love you because you make me want to be a better man—every single day.",
+    ];
+    const reasonText = document.getElementById('reason-text');
+    const reasonButton = document.getElementById('reason-button');
+    reasonButton.addEventListener('click', () => {
+        let randomIndex = Math.floor(Math.random() * reasons.length);
+        reasonText.style.opacity = 0;
+        setTimeout(() => {
+            reasonText.textContent = `"${reasons[randomIndex]}"`;
+            reasonText.style.opacity = 1;
+        }, 400);
+    });
+
+    // --- Coupon Flip (NEW) ---
+    document.querySelectorAll('.coupon-container').forEach(container => {
+        container.addEventListener('click', () => {
+            container.querySelector('.coupon').classList.toggle('flipped');
+        });
+    });
+
+    // --- Love Quiz (NEW) ---
+    const quizQuestions = [
+        {
+            question: "Where did we first enjoyed our time together?",
+            options: ["Dominos", "Zinda Park", "Morning Walk", "Toggi World"],
+            answer: "Toggi World"
+        },
+        {
+            question: "Who Which food did you teach me to eat?",
+            options: ["Sushi", "Steak", "Seafood", "Cake"],
+            answer: "Seafood"
+        },
+        {
+            question: "What's the one food you can't live without?",
+            options: ["Pizza", "Tacos", "Sushi", "Pasta"],
+            answer: "Pizza"
+        },
+        {
+            question: "What is our dream vacation destination with you?",
+            options: ["Paris, France", "Bali, Indonesia", "Kyoto, Japan", "Maldives"],
+            answer: "Maldives"
+        },
+        {
+            question: "Where did we first kiss?",
+            options: ["Jatrabiroti", "University", "CNG", "Restaurant"],
+            answer: "CNG"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionDisplay = document.getElementById('question-display');
+    const optionsContainer = document.getElementById('options-container');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    const quizResult = document.getElementById('quiz-result');
+
+    function loadQuestion() {
+        if (currentQuestionIndex < quizQuestions.length) {
+            const q = quizQuestions[currentQuestionIndex];
+            questionDisplay.textContent = q.question;
+            optionsContainer.innerHTML = '';
+            q.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('quiz-option', 'w-full', 'p-4', 'bg-pink-100', 'text-gray-800', 'rounded-lg', 'shadow-md', 'hover:bg-pink-200', 'font-semibold', 'text-left');
+                button.addEventListener('click', () => selectOption(option, q.answer, button));
+                optionsContainer.appendChild(button);
+            });
+            nextQuestionBtn.classList.add('hidden');
+            quizResult.classList.add('hidden');
+        } else {
+            showQuizResult();
+        }
+    }
+
+    function selectOption(selectedOption, correctAnswer, button) {
+        const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+        allOptions.forEach(opt => {
+            opt.disabled = true; // Disable all buttons after selection
+            if (opt.textContent === correctAnswer) {
+                opt.classList.remove('bg-pink-100', 'hover:bg-pink-200');
+                opt.classList.add('bg-green-300', 'text-white'); // Correct answer
+            } else if (opt.textContent === selectedOption) {
+                opt.classList.remove('bg-pink-100', 'hover:bg-pink-200');
+                opt.classList.add('bg-red-300', 'text-white'); // Incorrect selected answer
+            }
+        });
+
+        if (selectedOption === correctAnswer) {
+            score++;
+        }
+        nextQuestionBtn.classList.remove('hidden');
+    }
+
+    nextQuestionBtn.addEventListener('click', () => {
+        currentQuestionIndex++;
+        loadQuestion();
+    });
+
+    function showQuizResult() {
+        questionDisplay.classList.add('hidden');
+        optionsContainer.classList.add('hidden');
+        nextQuestionBtn.classList.add('hidden');
+        quizResult.classList.remove('hidden');
+        let message = `You got ${score} out of ${quizQuestions.length} questions right! `;
+        if (score === quizQuestions.length) {
+            message += "You know me so well! ❤️";
+        } else if (score >= quizQuestions.length / 2) {
+            message += "Good job! You remember pretty well!";
+        } else {
+            message += "Looks like we need more date nights! 😉";
+        }
+        quizResult.textContent = message;
+    }
+
+    loadQuestion(); // Load the first question when the page loads
+
+    // --- Find the Hidden Hearts (NEW) ---
+    let heartsFound = 0;
+    const totalHearts = 5;
+    const hiddenHearts = document.querySelectorAll('.hidden-heart');
+    const heartModal = document.getElementById('heart-modal');
+    const heartsFoundCount = document.getElementById('hearts-found-count');
+
+    hiddenHearts.forEach(heart => {
+        heart.addEventListener('click', () => {
+            if (!heart.classList.contains('found')) {
+                heart.classList.add('found');
+                heart.style.opacity = 1; // Make it fully visible
+                heart.style.transform = 'scale(1.5)'; // Animate slightly
+                heartsFound++;
+                heartsFoundCount.textContent = `You've found ${heartsFound} out of ${totalHearts} hearts!`;
+                heartModal.classList.add('show');
+
+                if (heartsFound === totalHearts) {
+                    setTimeout(() => {
+                        heartModal.classList.remove('show');
+                        const confettiSettings = { target: 'confetti-canvas', max: 80 };
+                        const confetti = new ConfettiGenerator(confettiSettings);
+                        confetti.render();
+
+                        setTimeout(() => {
+                            confetti.clear();
+                        }, 3000);
+
+                        alert("You found all the hearts! You're amazing! ❤️");
+                    }, 500); // Small delay before final confetti and alert
+                }
+            }
+        });
+    });
+
+    document.querySelector('.close-modal').addEventListener('click', () => {
+        heartModal.classList.remove('show');
+    });
+
+});
+</script>
+
+</body>
+</html>
+```
